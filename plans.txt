@@ -1,0 +1,5 @@
+"Tg 
+
+1) find "
+2) consume all characters until I find the next " without creating a new token
+3) my lexeme will be the substring between (start + 1, current - 1)
