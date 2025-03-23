@@ -78,6 +78,16 @@ class Scanner {
             case '=':
                 addToken(match('=') ? EQUAL_EQUAL : EQUAL, null);
                 break;
+            case '"':
+                string();
+                break;
+            case '/':
+                if (match('/')){
+                    comment();
+                } else{
+                    addToken(SLASH, null);
+                }
+                break;
             case ' ':
             case '\t':
             case '\r':
@@ -85,12 +95,15 @@ class Scanner {
             case '\n':
                 line++;
                 break;
-            case '"':
-                string();
-                break;
             default:
                 Lox.error(line, "Unexpected character.");
                 break;
+        }
+    }
+
+    private void comment() {
+        while(!isAtEnd(current) && source.charAt(current) != '\n'){
+            current++;
         }
     }
 
