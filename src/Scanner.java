@@ -116,14 +116,15 @@ class Scanner {
             if(isAtEnd(current)){
                 Lox.error(line, "String not finished with \"");
                 return;  
-            } 
+            } else if (source.charAt(current) == '\n'){
+                line++;
+            }
 
-                
             current++;
         }
 
         String value = source.substring(start + 1, current - 1);
-        current++;
+        //current++;
 
         //tokens.add(new Token(STRING, text, text, line));
         addToken(STRING, value);
