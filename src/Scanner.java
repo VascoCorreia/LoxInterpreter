@@ -23,7 +23,7 @@ class Scanner {
             start = current;
             scanToken();
         }
-
+        peek();
         tokens.add(new Token(EOF, "", null, line));
         return tokens;
     }
@@ -33,7 +33,7 @@ class Scanner {
     }
 
     void scanToken() {
-        char charBeingConsumed = source.charAt(current);
+        char charBeingConsumed = peek();
         current++;
         switch (charBeingConsumed) {
             case '(':
@@ -96,13 +96,27 @@ class Scanner {
                 line++;
                 break;
             default:
+                if(Character.isDigit(charBeingConsumed)){
+                     while (!isAtEnd(current) && (Character.isDigit(peek()) || peek() == '.')){    
+                        current++;
+                    } 
+                    String lexeme = source.substring(start, current);
+                    Double value = Double.valueOf(lexeme);
+                    tokens.add(new Token(NUMBER, lexeme, value, line));
+                    break;
+                }
                 Lox.error(line, "Unexpected character.");
                 break;
         }
     }
 
+    private char peek() {
+        if(isAtEnd(current)) return '\0';
+        return source.charAt(current);
+    }
+
     private void comment() {
-        while(!isAtEnd(current) && source.charAt(current) != '\n'){
+        while(!isAtEnd(current) && peek() != '\n'){
             current++;
         }
     }
@@ -111,7 +125,7 @@ class Scanner {
         if (isAtEnd(current))
             return false;
 
-        var currentChar = source.charAt(current);
+        var currentChar = peek();
         if (currentChar != expected)
             return false;
 
@@ -129,7 +143,7 @@ class Scanner {
             if(isAtEnd(current)){
                 Lox.error(line, "String not finished with \"");
                 return;  
-            } else if (source.charAt(current) == '\n'){
+            } else if (peek() == '\n'){
                 line++;
             }
 
