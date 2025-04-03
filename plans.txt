@@ -1,5 +1,9 @@
-"Tg 
+121.1
+121.
+121 
+a2a
 
-1) find "
-2) consume all characters until I find the next " without creating a new token
-3) my lexeme will be the substring between (start + 1, current - 1)
+1) find /
+2) if next is / it is a comment, so we consume all characters 
+until /n and we do not create a token
+3) if not add division token
