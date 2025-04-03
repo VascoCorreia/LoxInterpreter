@@ -23,7 +23,7 @@ class Scanner {
             start = currentIndex;
             scanToken();
         }
-
+        peek();
         tokens.add(new Token(EOF, "", null, line));
         return tokens;
     }
@@ -33,7 +33,7 @@ class Scanner {
     }
 
     void scanToken() {
-        char charBeingConsumed = source.charAt(currentIndex);
+        char charBeingConsumed = peek();
         currentIndex++;
         switch (charBeingConsumed) {
             case '(':
@@ -97,22 +97,26 @@ class Scanner {
                 break;
             default:
                 if(Character.isDigit(charBeingConsumed)){
-                    while(!isAtEnd(currentIndex) && Character.isDigit(source.charAt(currentIndex))){
+                     while (!isAtEnd(currentIndex) && (Character.isDigit(peek()) || peek() == '.')){    
                         currentIndex++;
-                    }
+                    } 
                     String lexeme = source.substring(start, currentIndex);
-                    Double value = Double.parseDouble(lexeme);
+                    Double value = Double.valueOf(lexeme);
                     tokens.add(new Token(NUMBER, lexeme, value, line));
                     break;
-                    
                 }
                 Lox.error(line, "Unexpected character.");
                 break;
         }
     }
 
+    private char peek() {
+        if(isAtEnd(currentIndex)) return '\0';
+        return source.charAt(currentIndex);
+    }
+
     private void comment() {
-        while(!isAtEnd(currentIndex) && source.charAt(currentIndex) != '\n'){
+        while(!isAtEnd(currentIndex) && peek() != '\n'){
             currentIndex++;
         }
     }
@@ -121,7 +125,7 @@ class Scanner {
         if (isAtEnd(currentIndex))
             return false;
 
-        var currentChar = source.charAt(currentIndex);
+        var currentChar = peek();
         if (currentChar != expected)
             return false;
 
@@ -139,7 +143,7 @@ class Scanner {
             if(isAtEnd(currentIndex)){
                 Lox.error(line, "String not finished with \"");
                 return;  
-            } else if (source.charAt(currentIndex) == '\n'){
+            } else if (peek() == '\n'){
                 line++;
             }
 
