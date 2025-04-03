@@ -23,7 +23,7 @@ class Scanner {
             start = currentIndex;
             scanToken();
         }
-        peek();
+
         tokens.add(new Token(EOF, "", null, line));
         return tokens;
     }
@@ -82,9 +82,9 @@ class Scanner {
                 string();
                 break;
             case '/':
-                if (match('/')){
+                if (match('/')) {
                     comment();
-                } else{
+                } else {
                     addToken(SLASH, null);
                 }
                 break;
@@ -96,27 +96,46 @@ class Scanner {
                 line++;
                 break;
             default:
-                if(Character.isDigit(charBeingConsumed)){
-                     while (!isAtEnd(currentIndex) && (Character.isDigit(peek()) || peek() == '.')){    
-                        currentIndex++;
-                    } 
-                    String lexeme = source.substring(start, currentIndex);
-                    Double value = Double.valueOf(lexeme);
-                    tokens.add(new Token(NUMBER, lexeme, value, line));
+                if (Character.isDigit(charBeingConsumed)) {
+                    number();
                     break;
                 }
+
                 Lox.error(line, "Unexpected character.");
                 break;
         }
     }
 
+    private void number() {
+        while (Character.isDigit(peek())) {
+            currentIndex++;
+        }
+        if (peek() == '.' && Character.isDigit(peekNext())) {
+            currentIndex++;
+            while (Character.isDigit(peek())) {
+                currentIndex++;
+            }
+        }
+
+        String lexeme = source.substring(start, currentIndex);
+        Double value = Double.valueOf(lexeme);
+        tokens.add(new Token(NUMBER, lexeme, value, line));
+    }
+
     private char peek() {
-        if(isAtEnd(currentIndex)) return '\0';
+        if (isAtEnd(currentIndex))
+            return '\0'; // return null
         return source.charAt(currentIndex);
     }
 
+    private char peekNext() {
+        if (isAtEnd(currentIndex + 1))
+            return '\0'; // return null
+        return source.charAt(currentIndex + 1);
+    }
+
     private void comment() {
-        while(!isAtEnd(currentIndex) && peek() != '\n'){
+        while (!isAtEnd(currentIndex) && peek() != '\n') {
             currentIndex++;
         }
     }
@@ -138,12 +157,12 @@ class Scanner {
         tokens.add(new Token(type, lexeme, literal, line));
     }
 
-    private void string(){
-        while(!match('"')){
-            if(isAtEnd(currentIndex)){
+    private void string() {
+        while (!match('"')) {
+            if (isAtEnd(currentIndex)) {
                 Lox.error(line, "String not finished with \"");
-                return;  
-            } else if (peek() == '\n'){
+                return;
+            } else if (peek() == '\n') {
                 line++;
             }
 
@@ -151,9 +170,9 @@ class Scanner {
         }
 
         String value = source.substring(start + 1, currentIndex - 1);
-        //current++;
+        // current++;
 
-        //tokens.add(new Token(STRING, text, text, line));
+        // tokens.add(new Token(STRING, text, text, line));
         addToken(STRING, value);
     }
 }
