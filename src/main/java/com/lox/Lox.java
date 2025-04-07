@@ -1,4 +1,4 @@
-package src.main.java;
+package com.lox;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,9 +7,8 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-//import java.util.Scanner;
 
-import src.main.java.Scanner;
+//import Scanner;
 
 public class Lox {
 
