@@ -1,6 +1,6 @@
-package src;
+package src.main.java;
 
-import static src.TokenType.*;
+import static src.main.java.TokenType.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +16,28 @@ class Scanner {
 
     Scanner(String source) {
         this.source = source;
+    }
+
+    private static final Map<String, TokenType> keywords;
+
+    static {
+        keywords = new HashMap<>();
+        keywords.put("and",    AND);
+        keywords.put("class",  CLASS);
+        keywords.put("else",   ELSE);
+        keywords.put("false",  FALSE);
+        keywords.put("for",    FOR);
+        keywords.put("fun",    FUN);
+        keywords.put("if",     IF);
+        keywords.put("nil",    NIL);
+        keywords.put("or",     OR);
+        keywords.put("print",  PRINT);
+        keywords.put("return", RETURN);
+        keywords.put("super",  SUPER);
+        keywords.put("this",   THIS);
+        keywords.put("true",   TRUE);
+        keywords.put("var",    VAR);
+        keywords.put("while",  WHILE);
     }
 
     List<Token> scanTokens() {
@@ -100,10 +122,29 @@ class Scanner {
                     number();
                     break;
                 }
-
+                if(isLetterOrUnderscore(charBeingConsumed)){
+                    identifier();
+                    break;
+                }
+                
                 Lox.error(line, "Unexpected character.");
                 break;
         }
+    }
+
+    private void identifier() {
+        while(isAlphaNumeric(peek())){
+            currentIndex++;
+        }
+
+        String lexeme = source.substring(start, currentIndex);
+        TokenType type = keywords.get(lexeme);
+        
+        if(type == null){
+            type = IDENTIFIER;
+        }
+        
+        addToken(type, null);
     }
 
     private void number() {
@@ -170,9 +211,14 @@ class Scanner {
         }
 
         String value = source.substring(start + 1, currentIndex - 1);
-        // current++;
-
-        // tokens.add(new Token(STRING, text, text, line));
         addToken(STRING, value);
+    }
+
+    private boolean isLetterOrUnderscore(char c){
+        return (c >= 65 && c <= 90) || (c >= 97 && c <= 122) || c == 95;
+    }
+
+    private boolean isAlphaNumeric(char c){
+        return isLetterOrUnderscore(c) || Character.isDigit(c);
     }
 }
