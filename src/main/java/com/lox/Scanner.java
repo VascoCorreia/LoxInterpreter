@@ -105,9 +105,11 @@ class Scanner {
             case '/':
                 if (match('/')) {
                     comment();
+                } else if (match('*')) {
+                    multiLineComment();
                 } else {
                     addToken(SLASH, null);
-                }
+                } 
                 break;
             case ' ':
             case '\t':
@@ -178,6 +180,14 @@ class Scanner {
         while (!isAtEnd(currentIndex) && peek() != '\n') {
             currentIndex++;
         }
+    }
+
+    private void multiLineComment() {
+        while (!isAtEnd(currentIndex) && (peek() != '*' && peekNext() != '/')) {
+            if(peek() == '\n') line++;
+            currentIndex++;
+        }
+        currentIndex += 2;
     }
 
     private boolean match(char expected) {
